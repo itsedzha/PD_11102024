@@ -10,8 +10,10 @@ window.onload = function() {
             const response = await fetch('http://127.0.0.1:8000/api/user', {
                 method: 'GET',
                 headers: {
-                    'Authorization': `Bearer ${token}`
+                    'Authorization': `Bearer ${token}`,
+                    'Accept': 'application/json'
                 }
+                
             });
 
             const data = await response.json();
@@ -25,7 +27,7 @@ window.onload = function() {
             }
 
         } catch (error) {
-           console.log(error);
+            console.log(error);
         }
     });
 
