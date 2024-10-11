@@ -3,8 +3,7 @@ window.onload = function() {
     getForm.addEventListener('submit', async function(event) {
         event.preventDefault();
 
-        let formData = new FormData(event.target);
-        let token = formData.get('token');
+        let token = document.getElementById('get-token').value;
 
         try {
             const response = await fetch('http://127.0.0.1:8000/api/userdata', {
@@ -34,8 +33,7 @@ window.onload = function() {
     postForm.addEventListener('submit', async function(event) {
         event.preventDefault();
 
-        let formData = new FormData(event.target);
-        let token = formData.get('token');
+        let token = document.getElementById('create-token').value;
 
         try {
             const response = await fetch('http://127.0.0.1:8000/api/posts', {
@@ -45,8 +43,8 @@ window.onload = function() {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    title: formData.get('title'),
-                    body: formData.get('body')
+                    title: document.getElementById('title').value,
+                    body: document.getElementById('body').value
                 })
             });
         
@@ -99,7 +97,7 @@ window.onload = function() {
         }
     }
 
-    const token = document.getElementById('token').value;
+    const token = document.getElementById('get-token').value;
     if (token) {
         fetchAllPosts(token);
     }
