@@ -7,11 +7,10 @@ window.onload = function() {
         let token = formData.get('token');
 
         try {
-            const response = await fetch('http://127.0.0.1:8000/user', {
+            const response = await fetch('http://127.0.0.1:8000/api/user', {
                 method: 'GET',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/html'
+                    'Authorization': `Bearer ${token}`
                 }
             });
 
@@ -21,6 +20,8 @@ window.onload = function() {
                 document.getElementById('user-data').innerHTML = `<p>User Email: ${data.email}<br>
                                                                     User Name: ${data.name}</p>`;
                 await fetchAllPosts(token);
+            } else {
+                document.getElementById('user-data').innerHTML = `<p>Failed to get user data</p>`;
             }
 
         } catch (error) {
@@ -36,7 +37,7 @@ window.onload = function() {
         let token = formData.get('token');
 
         try {
-            const response = await fetch('http://127.0.0.1:8000/posts', {
+            const response = await fetch('http://127.0.0.1:8000/api/posts', {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -44,10 +45,10 @@ window.onload = function() {
                 },
                 body: JSON.stringify({
                     title: formData.get('title'),
-                    body: formData.get('title')
+                    body: formData.get('body')
                 })
             });
-
+        
             const data = await response.json();
 
             if (response.ok) {
@@ -57,6 +58,8 @@ window.onload = function() {
 
                 document.getElementById('title').value = '';
                 document.getElementById('body').value = '';
+            } else {
+                document.getElementById('post-data').innerHTML = `<p>Failed to create post</p>`;
             }
 
         } catch (error) {
@@ -66,8 +69,8 @@ window.onload = function() {
 
     async function fetchAllPosts(token) {
         try {
-            const response = await fetch('http://127.0.0.1:8000/posts', {
-                method: 'POST',
+            const response = await fetch('http://127.0.0.1:8000/api/posts', {
+                method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
@@ -87,7 +90,8 @@ window.onload = function() {
                         </div>
                     `;
                 });
-            
+            } else {
+                document.getElementById('user-posts').innerHTML = `<p>Failed to fetch posts</p>`;
             }
         } catch (error) {
             console.log(error);
