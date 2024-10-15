@@ -178,7 +178,7 @@ function attachGetUserEvent() {
         let token = localStorage.getItem('api_token') || document.getElementById('get-token').value;
 
         try {
-            const response = await fetch('http://127.0.0.1:8000/api/user', {
+            const response = await fetch('http://127.0.0.1:8000/api/userdata', {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -236,7 +236,7 @@ function attachCreatePostEvent() {
 // Fetch all posts
 async function fetchAllPosts(token) {
     try {
-        const response = await fetch('http://127.0.0.1:8000/api/posts', {
+        const response = await fetch('http://127.0.0.1:8000/api/posts', { // Use the correct /api/posts endpoint
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
