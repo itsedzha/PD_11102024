@@ -21,7 +21,8 @@ class PostController extends Controller implements HasMiddleware
      */
     public function index()
     {
-        return Post::all();
+        // Fetch posts only for the authenticated user
+        return auth()->user()->posts; // This will only return the posts for the current user
     }
 
     /**
