@@ -1,6 +1,27 @@
 document.addEventListener('DOMContentLoaded', function() {
     const contentDiv = document.getElementById('content');
 
+    // Check if user is logged in
+    const token = localStorage.getItem('api_token');
+    
+    if (!token) {
+        // Hide buttons if no user is logged in
+        document.getElementById('getUserBtn').style.display = 'none';
+        document.getElementById('createPostBtn').style.display = 'none';
+        document.getElementById('viewPostsBtn').style.display = 'none';
+        document.getElementById('logoutBtn').style.display = 'none';  // Hide logout if not logged in
+    } else {
+        // Show buttons if the user is logged in
+        document.getElementById('getUserBtn').style.display = 'inline-block';
+        document.getElementById('createPostBtn').style.display = 'inline-block';
+        document.getElementById('viewPostsBtn').style.display = 'inline-block';
+        document.getElementById('logoutBtn').style.display = 'inline-block';  // Show logout if logged in
+
+        // Hide register and login after login
+        document.getElementById('registerBtn').style.display = 'none';
+        document.getElementById('loginBtn').style.display = 'none';
+    }
+
     // Load Register form
     document.getElementById('registerBtn').addEventListener('click', function() {
         contentDiv.innerHTML = `
@@ -47,14 +68,20 @@ document.addEventListener('DOMContentLoaded', function() {
         attachLoginEvent();
     });
 
+    // Add logout functionality
+    document.getElementById('logoutBtn').addEventListener('click', function() {
+        logout();
+    });
+
     // Load Get User form
     document.getElementById('getUserBtn').addEventListener('click', function() {
+        const token = localStorage.getItem('api_token'); // Retrieve token from localStorage
         contentDiv.innerHTML = `
             <div class="container">
                 <h2>Get User</h2>
                 <form id="get-user-form">
                     <label for="get-token">Token</label>
-                    <input type="text" name="token" id="get-token">
+                    <input type="text" name="token" id="get-token" value="${token || ''}" readonly>
                     <input type="submit" value="Get">
                 </form>
                 <div id="user-data"></div>
@@ -65,18 +92,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Load Create Post form
     document.getElementById('createPostBtn').addEventListener('click', function() {
+        const token = localStorage.getItem('api_token'); // Retrieve token from localStorage
         contentDiv.innerHTML = `
             <div class="container">
                 <h2>Create Post</h2>
                 <form id="create-post-form">
                     <label for="create-token">Token</label>
-                    <input type="text" name="token" id="create-token">
+                    <input type="text" name="token" id="create-token" value="${token || ''}" readonly>
 
                     <label for="title">Title</label>
-                    <input type="text" name="title" id="title">
+                    <input type="text" name="title" id="title" required>
 
                     <label for="body">Body</label>
-                    <textarea name="body" id="body"></textarea>
+                    <textarea name="body" id="body" required></textarea>
 
                     <input type="submit" value="Create">
                 </form>
@@ -88,13 +116,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Load View Posts content
     document.getElementById('viewPostsBtn').addEventListener('click', function() {
+        const token = localStorage.getItem('api_token');
         contentDiv.innerHTML = `
             <div class="container">
                 <h2>Posts</h2>
                 <div id="user-posts"></div>
             </div>
         `;
-        const token = localStorage.getItem('api_token');
         if (token) {
             fetchAllPosts(token);
         } else {
@@ -161,6 +189,16 @@ function attachLoginEvent() {
             if (response.ok) {
                 localStorage.setItem('api_token', data.token);
                 document.getElementById('login-response').innerText = `Login successful! Token saved.`;
+
+                // Show buttons after login
+                document.getElementById('getUserBtn').style.display = 'inline-block';
+                document.getElementById('createPostBtn').style.display = 'inline-block';
+                document.getElementById('viewPostsBtn').style.display = 'inline-block';
+                document.getElementById('logoutBtn').style.display = 'inline-block';  // Show logout
+
+                // Hide register and login after login
+                document.getElementById('registerBtn').style.display = 'none';
+                document.getElementById('loginBtn').style.display = 'none';
             } else {
                 document.getElementById('login-response').innerText = `Error: ${data.message}`;
             }
@@ -170,40 +208,11 @@ function attachLoginEvent() {
     });
 }
 
-// Get User event handling
-function attachGetUserEvent() {
-    const form = document.getElementById('get-user-form');
-    form.addEventListener('submit', async function(event) {
-        event.preventDefault();
-        let token = localStorage.getItem('api_token') || document.getElementById('get-token').value;
-
-        try {
-            const response = await fetch('http://127.0.0.1:8000/api/userdata', {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                document.getElementById('user-data').innerHTML = `<p>User Email: ${data.email}<br>User Name: ${data.name}</p>`;
-            } else {
-                document.getElementById('user-data').innerHTML = `<p>Failed to get user data. ${data.message}</p>`;
-            }
-        } catch (error) {
-            console.error('Error fetching user data:', error);
-        }
-    });
-}
-
 // Create Post event handling
 function attachCreatePostEvent() {
     const postForm = document.getElementById('create-post-form');
     postForm.addEventListener('submit', async function(event) {
-        event.preventDefault();
+        event.preventDefault();  // Prevent page refresh
 
         let token = localStorage.getItem('api_token') || document.getElementById('create-token').value;
 
@@ -224,6 +233,9 @@ function attachCreatePostEvent() {
 
             if (response.ok) {
                 document.getElementById('post-data').innerHTML = `<p>Post Created Successfully!</p>`;
+
+                // Fetch and update the posts list after creating the post
+                fetchAllPosts(token);
             } else {
                 document.getElementById('post-data').innerHTML = `<p>Failed to create post. ${data.message}</p>`;
             }
@@ -233,10 +245,10 @@ function attachCreatePostEvent() {
     });
 }
 
-// Fetch all posts
+// Fetch all posts for the currently logged-in user
 async function fetchAllPosts(token) {
     try {
-        const response = await fetch('http://127.0.0.1:8000/api/posts', { // Use the correct /api/posts endpoint
+        const response = await fetch('http://127.0.0.1:8000/api/posts', {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -248,12 +260,12 @@ async function fetchAllPosts(token) {
 
         if (response.ok) {
             const postsContainer = document.getElementById('user-posts');
-            postsContainer.innerHTML = '';
+            postsContainer.innerHTML = '';  // Clear previous posts
             posts.forEach(post => {
                 postsContainer.innerHTML += `
                     <div class="post">
-                        <p>Title: ${post.title}</p>
-                        <p>Body: ${post.body}</p>
+                        <p><strong>Title:</strong> ${post.title}</p>
+                        <p><strong>Body:</strong> ${post.body}</p>
                     </div>
                 `;
             });
@@ -263,4 +275,19 @@ async function fetchAllPosts(token) {
     } catch (error) {
         console.error('Error fetching posts:', error);
     }
+}
+
+// Logout function
+function logout() {
+    localStorage.removeItem('api_token');  // Clear token
+    document.getElementById('getUserBtn').style.display = 'none';  // Hide buttons
+    document.getElementById('createPostBtn').style.display = 'none';
+    document.getElementById('viewPostsBtn').style.display = 'none';
+    document.getElementById('logoutBtn').style.display = 'none';  // Hide logout
+
+    // Show register and login after logout
+    document.getElementById('registerBtn').style.display = 'inline-block';
+    document.getElementById('loginBtn').style.display = 'inline-block';
+
+    document.getElementById('login-response').innerText = 'You have logged out.';
 }
