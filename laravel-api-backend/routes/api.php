@@ -28,3 +28,6 @@ Route::middleware('auth:sanctum')->apiResource('posts', PostController::class);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
+
+// Route to delete a post (added for delete functionality)
+Route::middleware('auth:sanctum')->delete('/posts/{post}', [PostController::class, 'destroy']);

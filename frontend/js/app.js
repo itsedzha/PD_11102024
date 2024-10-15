@@ -266,14 +266,45 @@ async function fetchAllPosts(token) {
                     <div class="post">
                         <p><strong>Title:</strong> ${post.title}</p>
                         <p><strong>Body:</strong> ${post.body}</p>
+                        <button class="delete-post-btn" data-id="${post.id}">Delete</button>
                     </div>
                 `;
+            });
+
+            // Attach delete event to each delete button
+            document.querySelectorAll('.delete-post-btn').forEach(button => {
+                button.addEventListener('click', async function() {
+                    const postId = this.getAttribute('data-id');
+                    await deletePost(postId, token);
+                    fetchAllPosts(token);  // Refresh the posts list after deletion
+                });
             });
         } else {
             document.getElementById('user-posts').innerHTML = `<p>Failed to fetch posts. ${posts.message}</p>`;
         }
     } catch (error) {
         console.error('Error fetching posts:', error);
+    }
+}
+
+// Delete Post functionality
+async function deletePost(postId, token) {
+    try {
+        const response = await fetch(`http://127.0.0.1:8000/api/posts/${postId}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.ok) {
+            alert('Post deleted successfully!');
+        } else {
+            alert('Failed to delete post.');
+        }
+    } catch (error) {
+        console.error('Error deleting post:', error);
     }
 }
 

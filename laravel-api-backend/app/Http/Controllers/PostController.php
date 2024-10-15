@@ -69,8 +69,12 @@ class PostController extends Controller implements HasMiddleware
      */
     public function destroy(Post $post)
     {
-        Gate::authorize('modify', $post);
-        $post->delete();
-        return ['message' => "The post ($post->id) has been deleted"];
+        // Ensure the authenticated user owns the post before deleting
+        if ($post->user_id === auth()->id()) {
+            $post->delete();
+            return response()->json(['message' => "The post ($post->id) has been deleted"], 200);
+        }
+
+        return response()->json(['message' => 'Unauthorized'], 403);
     }
 }
