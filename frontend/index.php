@@ -7,40 +7,21 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <h1>Laravel API frontend</h1>
+    <h1>Laravel API Frontend</h1>
 
-    <div class="container">
-        <h2>Get user</h2>
-        <form id="get-user-form">
-            <label for="get-token">Token</label>
-            <input type="text" name="token" id="get-token">
-            <input type="submit" value="Get">
-        </form>
-        <div id="user-data"></div>
+    <!-- Navigation buttons for SPA -->
+    <div class="nav">
+        <button id="registerBtn">Register</button>
+        <button id="loginBtn">Login</button>
+        <button id="getUserBtn">Get User</button>
+        <button id="createPostBtn">Create Post</button>
+        <button id="viewPostsBtn">View Posts</button>
     </div>
 
-    <div class="container">
-        <h2>Create post</h2>
-        <form id="create-post-form">
-            <label for="create-token">Token</label>
-            <input type="text" name="token" id="create-token">
+    <!-- Content container where forms and data will be dynamically loaded -->
+    <div id="content" class="container"></div>
 
-            <label for="title">Title</label>
-            <input type="text" name="title" id="title">
-
-            <label for="body">Body</label>
-            <textarea name="body" id="body"></textarea>
-
-            <input type="submit" value="Create">
-        </form>
-        <div id="post-data"></div>
-    </div>
-
-    <div class="container">
-        <h2>Posts</h2>
-        <div id="user-posts"></div>
-    </div>
-
-    <script src="js/app.js"></script> 
+    <!-- External JavaScript -->
+    <script src="js/app.js"></script>
 </body>
 </html>

@@ -12,6 +12,28 @@ h1 {
     font-size: 36px;
 }
 
+/* Navigation styling */
+.nav {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.nav button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    margin: 0 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.nav button:hover {
+    background-color: #45a049;
+}
+
 /* Basic styling for form containers */
 .container {
     max-width: 800px;
@@ -21,6 +43,7 @@ h1 {
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     background-color: #fff;
+    text-align: center;
 }
 
 /* Form title styling */
@@ -39,6 +62,8 @@ h1 {
 
 .container input[type="text"],
 .container textarea,
+.container input[type="password"],
+.container input[type="email"],
 .container input[type="submit"] {
     width: 100%;
     padding: 10px;
